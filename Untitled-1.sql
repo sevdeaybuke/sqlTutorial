@@ -1,4 +1,8 @@
 /*
+create database galeri
+go
+use galeri
+go
 create table arac(
 aracno int IDENTITY(1,1) NOT NULL PRIMARY KEY,
 a_model int, marka nchar(20),
@@ -86,3 +90,15 @@ select avg(fiyat) from arac where 2010 - a_model > 3
 select avg(sfiyat) from satis
 select aracno, avg(afiyat) from alim group by aracno having avg(afiyat) > 10000
 select aracno, max(sfiyat)-min(sfiyat) from satis GROUP by aracno
+--bolum 9
+select m.madi from musteri m inner join satis s on s.mno = m.mno
+select m.mno,count(aracno) from musteri m inner join alim a on a.mno = m.mno GROUP by m.mno
+select sum(s.sfiyat) "Toplam Satis", sum(a.afiyat) "Toplam alim", sum(s.sfiyat) - sum(a.afiyat) "Fark" from satis s,alim a
+select a.aracno from arac a EXCEPT select aracno from satis
+select a.aracno,avg(sfiyat) from arac a inner join satis s on s.aracno = a.aracno GROUP by a.aracno
+select a.marka,a.a_model,count(al.aracno) - count(s.aracno) from arac a inner join satis s
+on s.aracno = a.aracno inner join alim al on al.aracno = a.aracno group by a.marka,a.a_model
+select m.mno,a.aracno,s.sfiyat from satis s inner join musteri m on s.mno = m.mno
+inner join arac a on a.aracno = s.aracno where s.sfiyat > 20000
+select a.aracno from arac a inner join satis s on s.aracno = a.aracno inner join musteri m
+on m.mno = s.mno where m.madres like '%Tokat'
