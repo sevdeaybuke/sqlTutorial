@@ -125,3 +125,10 @@ select sum(sfiyat) fiyat, mno from satis where mno in(
 select * from musteri where not exists (
     select * from satis where satis.mno = musteri.mno union select * from alim where alim.mno = musteri.mno 
 )
+select * from musteri where mno in(
+    select mno from satis where DATEPART(m,satis.sat_tar) in (5,6)
+)
+select * from arac where aracno in(
+    select aracno from alim EXCEPT select aracno from satis
+)
+select a.marka, (select avg(afiyat) from alim) alim from arac a where 2010-a.a_model > 3
