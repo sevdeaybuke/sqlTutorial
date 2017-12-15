@@ -1,4 +1,4 @@
-/*
+
 create database galeri
 go
 use galeri
@@ -67,7 +67,7 @@ from arac,satis,musteri
 where musteri.madres like 'Turhal/%' and
 (musteri.mno = satis.mno AND
 arac.aracno = satis.aracno)
-*/
+
 --Bolum 7
 select fiyat+fiyat*0.20 from arac
 select fiyat+fiyat*0.15,a_model,fiyat from arac where datepart(year,getdate())-a_model < 3
@@ -102,3 +102,26 @@ select m.mno,a.aracno,s.sfiyat from satis s inner join musteri m on s.mno = m.mn
 inner join arac a on a.aracno = s.aracno where s.sfiyat > 20000
 select a.aracno from arac a inner join satis s on s.aracno = a.aracno inner join musteri m
 on m.mno = s.mno where m.madres like '%Tokat'
+--bolum 10
+select * from musteri where mno in(
+    select mno from satis where aracno = (
+        select aracno from satis where mno =(
+            select mno from musteri where madi ='Turgut'
+        )
+    )
+)
+select * from arac where aracno in(
+    select aracno from satis
+)
+select * from arac where aracno in(
+    select s.aracno from satis s inner join alim a on a.afiyat > s.sfiyat
+)
+select sfiyat from satis where aracno in  (
+    select aracno from arac where fiyat > 20000
+)
+select sum(sfiyat) fiyat, mno from satis where mno in(
+    select mno from musteri where madres like '%Turhal%' or madres like '%Amasya%'
+) group by mno order by fiyat desc
+select * from musteri where not exists (
+    select * from satis where satis.mno = musteri.mno union select * from alim where alim.mno = musteri.mno 
+)
