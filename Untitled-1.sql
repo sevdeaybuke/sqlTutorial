@@ -1,4 +1,4 @@
-
+--Deneme database
 create database galeri
 go
 use galeri
