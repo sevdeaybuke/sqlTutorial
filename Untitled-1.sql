@@ -1,4 +1,4 @@
---Deneme database
+
 create database galeri
 go
 use galeri
@@ -131,4 +131,20 @@ select * from musteri where mno in(
 select * from arac where aracno in(
     select aracno from alim EXCEPT select aracno from satis
 )
-select a.marka, (select avg(afiyat) from alim) alim from arac a where 2010-a.a_model > 3
+select a.marka,avg(al.afiyat) from arac a inner join alim al on al.aracno = a.aracno where 2010 - a.a_model > 3 GROUP by a.marka
+select * from arac where fiyat > (select avg(sfiyat) from satis)
+--bolum 11
+Create view arac_satis(marka,a_model) AS Select arac.marka,arac.a_model from arac,satis where arac.aracno = satis.aracno
+create view alim_sayisi(sayi) as select count(*) from alim
+create VIEW soru3(marka,a_model) as select a.marka,a.a_model from arac a inner join satis s on a.aracno = s.aracno WHERE s.sfiyat between 8000 and 12000
+
+select * from musteri where mno in(
+    select mno from satis where aracno in (
+        select aracno from arac where marka like '%Opel%'
+    ) UNION All
+    select mno from alim where aracno in (
+        select aracno from arac where marka like '%Opel%'
+    )
+)
+
+select * from soru3
