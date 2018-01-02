@@ -138,7 +138,7 @@ Create view arac_satis(marka,a_model) AS Select arac.marka,arac.a_model from ara
 create view alim_sayisi(sayi) as select count(*) from alim
 create VIEW soru3(marka,a_model) as select a.marka,a.a_model from arac a inner join satis s on a.aracno = s.aracno WHERE s.sfiyat between 8000 and 12000
 
-select * from musteri where mno in(
+create view opelmarka as select * from musteri where mno in(
     select mno from satis where aracno in (
         select aracno from arac where marka like '%Opel%'
     ) UNION All
@@ -146,5 +146,67 @@ select * from musteri where mno in(
         select aracno from arac where marka like '%Opel%'
     )
 )
+create view soru5(satis_fiyat) as select s.sfiyat from satis s inner join arac a on s.aracno = a.aracno where a.fiyat > 20000
 
-select * from soru3
+if exists (select * from satis where aracno = 3)
+BEGIN
+    Select * from satis where aracno = 3
+END
+ELSE
+BEGIN
+    print 'satis yapilmamistir'
+END
+
+Declare @aracno int
+Select @aracno = aracno from arac
+    where a_model = (Select max(a_model) from arac)
+
+WHILE (select fiyat from arac where aracno = @aracno) < 34000
+BEGIN
+    Update arac set fiyat = fiyat + fiyat * 0.10
+END
+GO
+Select * from arac
+
+Create PROCEDURE aracbul(@aracn int)
+AS
+BEGIN
+    IF EXISTS (Select * from satis where aracno = @aracn)
+    BEGIN
+        Select * from satis where aracno = @aracn
+    END
+    ELSE IF EXISTS (select * from alim where aracno = @aracn)
+    BEGIN
+        Select * from satis where aracno = @aracn
+    END
+END
+GO
+EXEC aracbul 5
+
+Create PROCEDURE satis_yap(@aracno int=null,@mno int=null)
+AS
+BEGIN
+    IF NOT EXISTs (select * from arac where aracno = @aracno) OR 
+        NOT EXISTS (select * from musteri where mno = @mno)
+    BEGIN
+        print 'Musteri yada arac bulunamadi'
+    END
+    ELSE
+    BEGIN
+        insert into satis values(@mno,@aracno,GETDATE(),15.000)
+    END
+END
+GO
+
+exec satis_yap 3,6
+select * from satis
+
+create FUNCTION marka_bul(@aracno int)
+RETURNS VARCHAR(30)
+AS
+BEGIN
+    RETURN (select marka from arac where aracno = @aracno)
+END
+GO
+
+select dbo.marka_bul(aracno) from arac
